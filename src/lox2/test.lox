@@ -1,0 +1,155 @@
+print "one";
+print true;
+print 2 + 1;
+var a = 1;
+var b = 2;
+print a + b;
+var a = 1;
+print a = 2; // "2".
+var a = "global a";
+var b = "global b";
+var c = "global c";
+{
+  var a = "outer a";
+  var b = "outer b";
+  {
+    var a = "inner a";
+    print a;
+    print b;
+    print c;
+  }
+  print a;
+  print b;
+  print c;
+}
+print a;
+print b;
+print c;
+
+print "hi" or 2; // "hi".
+print nil or "yes"; // "yes".
+
+var a = 0;
+var temp;
+
+// both for and comments seems to malfunction
+for (var b = 1; a < 10000; b = temp + b) {
+ print a;
+ temp = a;
+ a = b;
+}
+
+fun count(n) {
+  while (n < 100) {
+    if (n == 3) return n; // <--
+    print n;
+    n = n + 1;
+  }
+}
+
+count(1);
+
+fun sayHi(first, last) {
+  print "Hi, " + first + " " + last + "!";
+}
+
+sayHi("Dear", "Reader");
+
+fun add(a, b, c) {
+  print a + b + c;
+}
+
+add(1, 2, 3);
+
+fun add(a, b) {
+  print a + b;
+}
+
+print add; // "<fn add>".
+
+fun procedure() {
+  print "don't return anything";
+}
+
+var result = procedure();
+print result; // ?
+
+fun fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 2) + fib(n - 1);
+}
+fun bad() {
+  var a = "first";
+  // var a = "second";
+}
+var a = "global";
+{
+  fun showA() {
+    print a;
+  }
+
+  showA();
+  var a = "block";
+  showA();
+}
+var a = 1;
+{
+  // var a = a + 2;
+  print a;
+}
+
+for (var i = 0; i < 20; i = i + 1) { print fib(i); }
+
+fun makeCounter() {
+  var i = 0;
+  fun count() {
+    // upvalues unsurprisingly fail
+    i = i + 1;
+    print i;
+  }
+
+  return count;
+}
+var counter = makeCounter();
+counter(); // "1".
+counter(); // "2".
+
+class Breakfast {
+  cook() {
+    print "Eggs a-fryin'!";
+  }
+
+  serve(who) {
+    print "Enjoy your breakfast, " + who + ".";
+  }
+}
+class DevonshireCream {
+  serveOn() {
+    return "Scones";
+  }
+}
+
+print DevonshireCream; // Prints "DevonshireCream".
+class Bagel { eat() { print "Crunch crunch crunch!"; } }
+var bagel = Bagel();
+print bagel; // Prints "Bagel instance".
+bagel.eat();
+class Cake {
+  taste() {
+    var adjective = "delicious";
+    print "The " + this.flavor + " cake is " + adjective + "!";
+  }
+}
+
+var cake = Cake();
+cake.flavor = "German chocolate";
+cake.taste(); // Prints "The German chocolate cake is delicious!".
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
+  }
+}
+
+class BostonCream < Doughnut {}
+
+BostonCream().cook();
