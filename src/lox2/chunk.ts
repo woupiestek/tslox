@@ -196,11 +196,11 @@ export class Table {
   static #find(
     keys: LoxString[],
     values: Value[],
-    capacity: number,
-    key: LoxString,
+    mask: number,
+    key: LoxString
   ): number {
     let tombstone: number | undefined = undefined;
-    let index = key.hash & (capacity - 1);
+    let index = key.hash & mask;
     for (;;) {
       const key2 = keys[index];
       const value = values[index];
@@ -209,7 +209,7 @@ export class Table {
           return tombstone === undefined ? index : tombstone;
         } else tombstone = index;
       } else if (key === key2) return index;
-      index = (index + 1) & (capacity - 1);
+      index = (index + 1) & mask;
     }
   }
 
@@ -222,10 +222,11 @@ export class Table {
       this.values = values;
       return;
     }
+    const mask = capacity - 1;
     for (let i = 0; i < this.capacity; i++) {
       const key: LoxString | undefined = this.keys[i];
       if (key === undefined) continue;
-      const index = Table.#find(keys, values, capacity, key);
+      const index = Table.#find(keys, values, mask, key);
       keys[index] = key;
       values[index] = this.values[i];
       this.count++;
@@ -253,7 +254,7 @@ export class Table {
 
   get(key: LoxString): Value | undefined {
     if (this.count === 0) return undefined;
-    const index = Table.#find(this.keys, this.values, this.capacity, key);
+    const index = Table.#find(this.keys, this.values, this.capacity - 1, key);
     if (this.keys[index] === undefined) return undefined;
     return this.values[index];
   }
@@ -262,7 +263,7 @@ export class Table {
     if (this.count + 1 > this.capacity * MAX_LOAD) {
       this.#grow(this.capacity < 8 ? 8 : this.capacity * 2);
     }
-    const index = Table.#find(this.keys, this.values, this.capacity, key);
+    const index = Table.#find(this.keys, this.values, this.capacity - 1, key);
     const isNewKey = this.keys[index] === undefined;
     if (isNewKey) {
       this.keys[index] = key;
@@ -274,7 +275,7 @@ export class Table {
 
   delete(key: LoxString): boolean {
     if (this.count === 0) return false;
-    const index = Table.#find(this.keys, this.values, this.capacity, key);
+    const index = Table.#find(this.keys, this.values, this.capacity - 1, key);
     if (this.keys[index] === undefined) return false;
     delete this.keys[index];
     return true;
